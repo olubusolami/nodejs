@@ -1,3 +1,4 @@
+const { number } = require('@hapi/joi');
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({
@@ -18,6 +19,21 @@ const userSchema = new mongoose.Schema({
         required: true,
         max: 1000,
         min: 6
+    },
+    country: {
+        type: String,
+        required: true,
+        max:1000
+    },
+    confirm_password:{
+        type: String,
+        required: true,
+        max:1000
+    },
+    contact_number:{
+        type: Number,
+        max:13,
+        min:11
     },
     date: {
         type: Date,

@@ -2,7 +2,7 @@ const router = require('express').Router();
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { registerValidation, loginValidation } = require('../validation')
+const { registerValidation, loginValidation, create_userValidation } = require('../validation')
 
 router.post('/register', async (req,res) => {
 
@@ -57,5 +57,43 @@ res.send('Logged in!');
 
 
 });
+
+//new user
+router.post ('/create_user', async (req,res) => {
+
+    // lets validate the data before creating a user
+    const {error} = create_userValidation(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+       //hash the password
+       const salt = await bcrypt.genSalt(10);
+       const hashedPassword = await bcrypt.hash(req.body.password,salt);
+    
+    //checking if the email exists
+    const user = await User.findOne(
+        {
+        email: req.body.email,
+        name: req.body.name,
+        password: hashedPassword
+    });
+    if(!user) return res.status(400).send('Email is taken already');
+    
+    //password check
+    const validPass = await bcrypt.compare(req.body.password, user.password);
+    if(!validPass) return res.status(400).send('invalid password');
+
+    //Contact check
+    const number =await User.findOne (req.body.contact_number);
+    if(!number) return res.status(400).send('number must be min');
+    
+    //create and assign a token
+    const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+    res.header('auth-token', token).send(user);
+    
+    res.send('Registered!');
+    
+    
+    });
+    
 
 module.exports = router;

@@ -23,4 +23,5 @@ app.use(express.json());
 app.use('/api/user', authRoute);
 app.use('/api/posts', postRoute);
 
-app.listen(4000, () => console.log('server up and running beautifully'));
+port = process.env.PORT || 4000 
+app.listen(port, () => console.log('server up and running beautifully'));
