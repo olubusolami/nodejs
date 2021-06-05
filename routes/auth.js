@@ -2,7 +2,7 @@ const router = require('express').Router();
 const User = require('../model/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const { registerValidation, loginValidation } = require('../validation')
+const { registerValidation, loginValidation, create_userValidation } = require('../validation')
 
 router.post('/register', async (req,res) => {
 
@@ -57,5 +57,49 @@ res.send('Logged in!');
 
 
 });
+
+//new user
+router.post ('/create_user', async (req,res) => {
+
+    // lets validate the data before creating a user
+    const {error} = create_userValidation(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    //equality between passwords
+    if (req.body.password !==req.body.confirm_password){
+        res.status(400).json({message: "passwords do not match"})   
+     }
+
+    //hash the password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password,salt);
+    
+    //checking if the email exists
+    const user = await User.findOne({email: req.body.email});
+    if(user) return res.status(400).send('Email is taken already');
+
+    //check for number
+    const contact_number = await User.findOne({contact_number: req.body.contact_number});
+        if (contact_number) return res.status(400).json('number must be 11');  
+    
+    //create a new user
+    const create_user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: hashedPassword,
+        contact_number: req.body.contact_number,
+        country: req.body.country
+    }); 
+
+    try{
+        const savedUser = await create_user.save();
+        res.status(201).json(savedUser);
+    }
+    catch(err){
+        res.status(400).json(err);
+    }
+    
+    });
+    
 
 module.exports = router;
