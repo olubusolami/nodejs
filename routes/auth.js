@@ -80,7 +80,7 @@ router.post ('/create_user', async (req,res) => {
 
     //check for number
     const contact_number = await User.findOne({contact_number: req.body.contact_number});
-        if (contact_number) return res.status(400).json('number must be 11');  
+        if (contact_number) return res.status(400).json('number must be min');  
     
     //create a new user
     const create_user = new User({
