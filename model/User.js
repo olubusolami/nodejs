@@ -25,15 +25,15 @@ const userSchema = new mongoose.Schema({
         required: true,
         max:1000
     },
-    confirm_password:{
-        type: String,
-        required: true,
-        max:1000
-    },
+    // confirm_password:{
+    //     type: String,
+    //     required: true,
+    //     max:1000
+    // },
     contact_number:{
         type: Number,
-        max:13,
-        min:11
+        required: true,
+        minLength: 11,
     },
     date: {
         type: Date,

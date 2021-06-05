@@ -45,7 +45,7 @@ const create_userValidation = data => {
         password: Joi.string()
         .min(6)
         .required(),
-        confirmed_password: Joi.string()
+        confirm_password: Joi.string()
         .min(6)
         .required(),
         country: Joi.string()
